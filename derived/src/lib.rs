@@ -25,7 +25,7 @@ use syn::{parse_macro_input, Data, DeriveInput, Fields};
 /// assert_eq!(ms.unsigned_int, -1);
 /// ```
 pub fn derive_ctor(input: TokenStream) -> TokenStream {
-    let mut field_names = HashMap::new();
+    let mut field_names = Vec::new();
     let parsed_input: DeriveInput = parse_macro_input!(input);
     let struct_name = parsed_input.ident.clone();
     let fields = match &parsed_input.data {
@@ -59,7 +59,7 @@ pub fn derive_ctor(input: TokenStream) -> TokenStream {
         fields.iter().for_each(|field| {
             let ty = field.ty.clone();
             let fname = field.ident.as_ref().unwrap().clone();
-            field_names.insert(fname, ty);
+            field_names.push((fname, ty));
         });
         let mut tokens = quote! {};
         let mut self_args = quote! {};

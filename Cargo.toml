@@ -1,14 +1,2 @@
-[package]
-author = "Sayan Nandan <ohsayan@outlook.com>"
-description = "Derive macros for lesser headaches"
-edition = "2018"
-license = "Apache-2.0"
-name = "derived"
-version = "0.1.0"
-
-[lib]
-proc-macro = true
-
-[dependencies]
-quote = "1.0.9"
-syn = {version = "1.0.77", features = ["full"]}
+[workspace]
+members = ["derived", "derive-examples"]
