@@ -1,5 +1,5 @@
 [package]
-author = "Sayan Nandan <ohsayan@outlook.com>"
+authors = ["Sayan Nandan <ohsayan@outlook.com>"]
 description = "Derive macros for lesser headaches"
 edition = "2018"
 license = "Apache-2.0"

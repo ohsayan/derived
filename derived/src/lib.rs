@@ -1,3 +1,12 @@
+//! `derived`: A macro to automate the boring stuff
+//!
+//! The `derived` crate aims to provided macros to automate boring things like writing functions
+//! for constructors. Just look at the list of available macros and you'll find an example for each.
+//!
+//! Available macros:
+//! - [`Ctor`]: Generate constructors automatically
+//!
+
 use proc_macro::TokenStream;
 use quote::quote;
 use syn::DataStruct;
