@@ -6,6 +6,7 @@
 //! Available macros:
 //! - [`Ctor`]: Generate constructors automatically
 //! - [`Gtor`]: Generate getters automatically
+//! - [`Stor`]: Generate setters automatically
 //!
 
 use proc_macro::TokenStream;
@@ -137,7 +138,7 @@ pub fn derive_ctor(input: TokenStream) -> TokenStream {
 /// Gtor takes the fields in order and generates getters for each field. For example,
 /// if you have fields named `userid` and `name`, then the getters generated will be
 /// `get_userid` and `get_name`, returning references to the appropriate types. In other
-/// words, `get_*` named methods will be derived per your fields.println!
+/// words, `get_*` named methods will be derived per your fields.
 ///
 /// ## Important note
 ///
@@ -209,11 +210,81 @@ pub fn derive_gtor(input: TokenStream) -> TokenStream {
             } else {
                 q = quote! {
                     #q
+                    #[doc = #doc_comment]
                     pub fn #fname(&self) -> &#ty {
                         &self.#field
                     }
                 };
             }
+        }
+        q = quote! {
+            impl #struct_name {
+                #q
+            }
+        };
+        q.into()
+    } else {
+        return "".parse().unwrap();
+    }
+}
+
+#[proc_macro_derive(Stor)]
+/// # Stor: Get the setters derived
+///
+/// Stor takes the fields in order and generates setters for each field. For example,
+/// if you have fields named `userid` and `name`, then the setters generated will be
+/// `set_userid` and `set_name`, accepting values for the appropriate types. In other
+/// words, `set_*` named methods will be derived per your fields.
+///
+///
+/// ## Doc-comments
+///
+/// The [`Stor`] macro will automatically add a doc comment of the form:
+/// ```text
+/// Sets the value for the `<struct_field>` field in struct [`<struct_name>`]
+/// ```
+///
+/// ## Example
+/// ```
+/// use derived::Stor;
+/// #[derive(Stor)]
+/// struct MyStruct {
+///     name: String,
+///     userid: u64,
+/// }
+///
+/// let mut ms = MyStruct { name: "Sayan".to_owned(), userid: 1 };
+/// assert_eq!(ms.name, "Sayan");
+/// assert_eq!(ms.userid, 1);
+/// ms.set_userid(0);
+/// assert_eq!(ms.userid, 0);
+/// ```
+pub fn derive_stor(input: TokenStream) -> TokenStream {
+    let parsed_input: DeriveInput = parse_macro_input!(input);
+    let struct_name = parsed_input.ident.clone();
+    let fields = match get_struct_field_names(&parsed_input) {
+        Ok(f) => f,
+        Err(e) => return e,
+    };
+    if !fields.is_empty() {
+        let mut q = quote!();
+        for (field, ty) in fields {
+            let field_name_str = field.to_string();
+            let mut fname = "set_".to_owned();
+            fname.push_str(&field_name_str);
+            let doc_comment = format!(
+                "Sets the value for the `{field}` field in struct [`{struct_name}`]",
+                struct_name = struct_name,
+                field = field_name_str
+            );
+            let fname = Ident::new(&fname, field.span());
+            q = quote! {
+                #q
+                #[doc = #doc_comment]
+                pub fn #fname(&mut self, #field: #ty) {
+                    self.#field = #field;
+                }
+            };
         }
         q = quote! {
             impl #struct_name {
