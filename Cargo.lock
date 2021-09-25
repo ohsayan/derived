@@ -6,14 +6,12 @@ version = 3
 name = "derive-examples"
 version = "0.1.0"
 dependencies = [
- "derived 0.1.0",
+ "derived 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "derived"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0b6a35f5b83525734d88f46b04855022dbfdabe9c351920c301d8cd6cf485a56"
+version = "0.1.1"
 dependencies = [
  "quote",
  "syn",
@@ -22,6 +20,8 @@ dependencies = [
 [[package]]
 name = "derived"
 version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2d74989aa5850c7c20f788f6463e4c3204748c7ebe3ab10b71ef2786ddc9882a"
 dependencies = [
  "quote",
  "syn",
