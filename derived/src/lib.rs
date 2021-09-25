@@ -10,9 +10,29 @@
 
 use proc_macro::TokenStream;
 use quote::quote;
+use quote::ToTokens;
+use std::collections::HashSet;
 use syn::DataStruct;
 use syn::{parse_macro_input, Data, DeriveInput, Fields};
 use syn::{Ident, Type};
+
+macro_rules! gen_typeset {
+    ($($ty:ty),*) => {
+        lazy_static::lazy_static! {
+            static ref TYCOPY: HashSet<&'static str> = {
+                let mut hs = HashSet::new();
+                $(
+                    hs.insert(stringify!($ty));
+                )*
+                hs
+            };
+        }
+    };
+}
+
+gen_typeset! {
+    u8, i8, u16, i16, u32, i32, u64, i64, u128, i128, str, bool, usize, isize, char, f32, f64
+}
 
 fn get_struct_field_names(parsed_input: &DeriveInput) -> Result<Vec<(Ident, Type)>, TokenStream> {
     let fields = match &parsed_input.data {
@@ -117,7 +137,15 @@ pub fn derive_ctor(input: TokenStream) -> TokenStream {
 /// Gtor takes the fields in order and generates getters for each field. For example,
 /// if you have fields named `userid` and `name`, then the getters generated will be
 /// `get_userid` and `get_name`, returning references to the appropriate types. In other
-/// words, `get_*` named methods will be derived per your fields
+/// words, `get_*` named methods will be derived per your fields.println!
+///
+/// ## Important note
+///
+/// If any of the fields within the struct are primitive types that do not require large copies,
+/// then the value is returned directly instead of a reference to it:
+/// ```text
+/// u8, i8, u16, i16, u32, i32, u64, i64, u128, i128, str, bool, usize, isize, char, f32, f64
+/// ```
 ///
 /// ## Example
 /// ```
@@ -144,12 +172,38 @@ pub fn derive_gtor(input: TokenStream) -> TokenStream {
             let mut fname = "get_".to_owned();
             fname.push_str(&field.to_string());
             let fname = Ident::new(&fname, field.span());
-            q = quote! {
-                #q
-                pub fn #fname(&self) -> &#ty {
-                    &self.#field
+
+            let is_prim = match &ty {
+                Type::Path(t) => {
+                    let type_str = t.clone().into_token_stream().to_string();
+                    if TYCOPY.contains(type_str.as_str()) {
+                        // this is a copy type; return no reference
+                        true
+                    } else {
+                        false
+                    }
                 }
+                // all these are copy type (fnptrs, ptrs, refs); no point in returning another ref
+                Type::BareFn(_) | Type::Never(_) | Type::Ptr(_) | Type::Reference(_) => true,
+                _ => false,
             };
+
+            if is_prim {
+                // a copy-able type
+                q = quote! {
+                    #q
+                    pub fn #fname(&self) -> #ty {
+                        self.#field
+                    }
+                };
+            } else {
+                q = quote! {
+                    #q
+                    pub fn #fname(&self) -> &#ty {
+                        &self.#field
+                    }
+                };
+            }
         }
         q = quote! {
             impl #struct_name {

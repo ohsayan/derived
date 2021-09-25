@@ -13,9 +13,16 @@ dependencies = [
 name = "derived"
 version = "0.1.2"
 dependencies = [
+ "lazy_static",
  "quote",
  "syn",
 ]
+
+[[package]]
+name = "lazy_static"
+version = "1.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
 
 [[package]]
 name = "proc-macro2"
