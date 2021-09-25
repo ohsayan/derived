@@ -5,6 +5,7 @@
 //!
 //! Available macros:
 //! - [`Ctor`]: Generate constructors automatically
+//! - [`Gtor`]: Generate getters automatically
 //!
 
 use proc_macro::TokenStream;
@@ -115,7 +116,8 @@ pub fn derive_ctor(input: TokenStream) -> TokenStream {
 ///
 /// Gtor takes the fields in order and generates getters for each field. For example,
 /// if you have fields named `userid` and `name`, then the getters generated will be
-/// `get_userid` and `get_name`, returning references to the appropriate types.
+/// `get_userid` and `get_name`, returning references to the appropriate types. In other
+/// words, `get_*` named methods will be derived per your fields
 ///
 /// ## Example
 /// ```
