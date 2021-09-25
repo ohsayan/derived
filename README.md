@@ -25,7 +25,7 @@ assert_eq!(mystruct,b, -1);
 ```rust
 use derived::{Ctor, Gtor};
 
-// we'll derive `Ctor` to avoid having to rewrite ctors
+// we'll derive `Ctor` to avoid having to write ctors
 #[derive(Ctor, Gtor)]
 pub struct MyStruct {
     name: String,
@@ -34,8 +34,8 @@ pub struct MyStruct {
 
 let ms = MyStruct::new("Sayan".to_owned(), 1);
 assert_eq!(ms.get_name(), "sayan");
-// we need to deref because the generated getters always return references
-assert_eq!(*ms.get_userid(), 1);
+// we don't need to deref because u64 is a copy type
+assert_eq!(ms.get_userid(), 1);
 ```
 
 ## License
