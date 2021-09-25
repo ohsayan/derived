@@ -141,10 +141,18 @@ pub fn derive_ctor(input: TokenStream) -> TokenStream {
 ///
 /// ## Important note
 ///
+/// ### References
 /// If any of the fields within the struct are primitive types that do not require large copies,
 /// then the value is returned directly instead of a reference to it:
 /// ```text
 /// u8, i8, u16, i16, u32, i32, u64, i64, u128, i128, str, bool, usize, isize, char, f32, f64
+/// ```
+/// 
+/// ### Doc-comments
+/// 
+/// The [`Gtor`] macro will automatically add a doc comment of the form:
+/// ```text
+/// Returns the value for the `<struct_field>` field in struct [`<struct_name>`]
 /// ```
 ///
 /// ## Example
@@ -169,8 +177,14 @@ pub fn derive_gtor(input: TokenStream) -> TokenStream {
     if !fields.is_empty() {
         let mut q = quote!();
         for (field, ty) in fields {
+            let field_name_str = field.to_string();
             let mut fname = "get_".to_owned();
-            fname.push_str(&field.to_string());
+            fname.push_str(&field_name_str);
+            let doc_comment = format!(
+                "Returns the value for the `{field}` field in struct [`{struct_name}`]",
+                struct_name=struct_name,
+                field=field_name_str
+            );
             let fname = Ident::new(&fname, field.span());
 
             let is_prim = match &ty {
@@ -192,6 +206,7 @@ pub fn derive_gtor(input: TokenStream) -> TokenStream {
                 // a copy-able type
                 q = quote! {
                     #q
+                    #[doc = #doc_comment]
                     pub fn #fname(&self) -> #ty {
                         self.#field
                     }
