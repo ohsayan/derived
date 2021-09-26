@@ -172,6 +172,7 @@ pub fn derive_ctor(input: TokenStream) -> TokenStream {
 pub fn derive_gtor(input: TokenStream) -> TokenStream {
     let ast: DeriveInput = parse_macro_input!(input);
     let struct_name = ast.ident.clone();
+    let (impl_gen, ty_gen, where_clause) = &ast.generics.split_for_impl();
     let fields = match get_struct_field_names(&ast) {
         Ok(f) => f,
         Err(e) => return e,
@@ -219,7 +220,7 @@ pub fn derive_gtor(input: TokenStream) -> TokenStream {
             }
         }
         q = quote! {
-            impl #struct_name {
+            impl #impl_gen #struct_name #ty_gen #where_clause {
                 #q
             }
         };
@@ -263,6 +264,7 @@ pub fn derive_gtor(input: TokenStream) -> TokenStream {
 pub fn derive_stor(input: TokenStream) -> TokenStream {
     let ast: DeriveInput = parse_macro_input!(input);
     let struct_name = ast.ident.clone();
+    let (impl_gen, ty_gen, where_clause) = &ast.generics.split_for_impl();
     let fields = match get_struct_field_names(&ast) {
         Ok(f) => f,
         Err(e) => return e,
@@ -288,7 +290,7 @@ pub fn derive_stor(input: TokenStream) -> TokenStream {
             };
         }
         q = quote! {
-            impl #struct_name {
+            impl #impl_gen #struct_name #ty_gen #where_clause {
                 #q
             }
         };

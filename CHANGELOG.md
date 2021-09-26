@@ -2,6 +2,13 @@
 
 All changes to this project will be noted in this file
 
+## 0.3.0
+
+### Additions
+
+- Added the `Stor` macro for generating setters
+- Added support for generic paramters (and lifetimes) in all the macros
+
 ## 0.2.0
 
 Added the `Gtor` macro for generating getters. `Gtor` will automatically generate getters, automatically
