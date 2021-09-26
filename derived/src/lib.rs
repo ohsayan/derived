@@ -35,15 +35,15 @@ gen_typeset! {
     u8, i8, u16, i16, u32, i32, u64, i64, u128, i128, str, bool, usize, isize, char, f32, f64
 }
 
-fn get_struct_field_names(parsed_input: &DeriveInput) -> Result<Vec<(Ident, Type)>, TokenStream> {
-    let fields = match &parsed_input.data {
+fn get_struct_field_names(ast: &DeriveInput) -> Result<Vec<(Ident, Type)>, TokenStream> {
+    let fields = match &ast.data {
         Data::Struct(DataStruct {
             fields: Fields::Named(fields),
             ..
         }) => &fields.named,
         _ => {
             return Err(syn::Error::new_spanned(
-                parsed_input,
+                ast,
                 "`#[derive(derived::Ctor)]` can only be used on structs",
             )
             .into_compile_error()
@@ -85,9 +85,10 @@ fn get_struct_field_names(parsed_input: &DeriveInput) -> Result<Vec<(Ident, Type
 /// assert_eq!(ms.unsigned_int, -1);
 /// ```
 pub fn derive_ctor(input: TokenStream) -> TokenStream {
-    let parsed_input: DeriveInput = parse_macro_input!(input);
-    let struct_name = parsed_input.ident.clone();
-    let fields = match get_struct_field_names(&parsed_input) {
+    let ast: DeriveInput = parse_macro_input!(input);
+    let struct_name = ast.ident.clone();
+    let (impl_gen, ty_gen, where_clause) = &ast.generics.split_for_impl();
+    let fields = match get_struct_field_names(&ast) {
         Ok(f) => f,
         Err(e) => return e,
     };
@@ -95,7 +96,7 @@ pub fn derive_ctor(input: TokenStream) -> TokenStream {
         // handle fast case: empty struct
         return {
             quote! {
-                impl #struct_name {
+                impl #impl_gen #struct_name #ty_gen #where_clause {
                     pub fn new() -> Self {
                         Self {}
                     }
@@ -118,10 +119,10 @@ pub fn derive_ctor(input: TokenStream) -> TokenStream {
             }
         }
         let tokens = quote! {
-            impl #struct_name {
+            impl #impl_gen #struct_name #ty_gen #where_clause {
                 pub fn new(
                     #tokens
-                ) -> #struct_name {
+                ) -> #struct_name #ty_gen {
                     Self {
                         #self_args
                     }
@@ -169,9 +170,9 @@ pub fn derive_ctor(input: TokenStream) -> TokenStream {
 /// assert_eq!(ms.get_name(), "Sayan");
 /// ```
 pub fn derive_gtor(input: TokenStream) -> TokenStream {
-    let parsed_input: DeriveInput = parse_macro_input!(input);
-    let struct_name = parsed_input.ident.clone();
-    let fields = match get_struct_field_names(&parsed_input) {
+    let ast: DeriveInput = parse_macro_input!(input);
+    let struct_name = ast.ident.clone();
+    let fields = match get_struct_field_names(&ast) {
         Ok(f) => f,
         Err(e) => return e,
     };
@@ -260,9 +261,9 @@ pub fn derive_gtor(input: TokenStream) -> TokenStream {
 /// assert_eq!(ms.userid, 0);
 /// ```
 pub fn derive_stor(input: TokenStream) -> TokenStream {
-    let parsed_input: DeriveInput = parse_macro_input!(input);
-    let struct_name = parsed_input.ident.clone();
-    let fields = match get_struct_field_names(&parsed_input) {
+    let ast: DeriveInput = parse_macro_input!(input);
+    let struct_name = ast.ident.clone();
+    let fields = match get_struct_field_names(&ast) {
         Ok(f) => f,
         Err(e) => return e,
     };
