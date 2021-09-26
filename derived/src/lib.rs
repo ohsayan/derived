@@ -3,11 +3,12 @@
 //! The `derived` crate aims to provided macros to automate boring things like writing functions
 //! for constructors. Just look at the list of available macros and you'll find an example for each.
 //!
-//! Available macros:
-//! - [`Ctor`]: Generate constructors automatically
-//! - [`Gtor`]: Generate getters automatically
-//! - [`Stor`]: Generate setters automatically
+//! ## Features
 //!
+//! - [`Ctor`]: To generate constructors
+//! - [`Gtor`]: To generate getters
+//! - [`Stor`]: To generate setters
+//! - Full lifetimes, generics and `where` clause support
 
 use proc_macro::TokenStream;
 use quote::quote;
