@@ -2,6 +2,10 @@
 
 All changes to this project will be noted in this file
 
+## 0.3.1
+
+- Fixed incorrect compiler error messages and inconsistencies in the documentation
+
 ## 0.3.0
 
 ### Additions

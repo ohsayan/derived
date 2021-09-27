@@ -12,7 +12,7 @@ pub struct User {
 #[derive(Ctor)]
 struct MyType<'a, T: ToString + Copy> {
     str_value: &'a T,
-    discriminant: u8,
+    tag: u8,
 }
 
 fn main() {
@@ -25,4 +25,6 @@ fn main() {
     // oh no, I lost followers
     x.set_followers(u64::MAX / 2);
     let ty = MyType::new(&125u8, 0);
+    assert_eq!(ty.str_value.to_string(), "125");
+    assert_eq!(ty.tag, 0);
 }

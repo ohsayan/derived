@@ -1,6 +1,6 @@
 //! `derived`: A macro to automate the boring stuff
 //!
-//! The `derived` crate aims to provided macros to automate boring things like writing functions
+//! The `derived` crate aims to provide macros to automate boring things like writing functions
 //! for constructors. Just look at the list of available macros and you'll find an example for each.
 //!
 //! ## Features
@@ -9,6 +9,7 @@
 //! - [`Gtor`]: To generate getters
 //! - [`Stor`]: To generate setters
 //! - Full lifetimes, generics and `where` clause support
+//!
 
 use proc_macro::TokenStream;
 use quote::quote;
@@ -43,12 +44,11 @@ fn get_struct_field_names(ast: &DeriveInput) -> Result<Vec<(Ident, Type)>, Token
             ..
         }) => &fields.named,
         _ => {
-            return Err(syn::Error::new_spanned(
-                ast,
-                "`#[derive(derived::Ctor)]` can only be used on structs",
-            )
-            .into_compile_error()
-            .into());
+            return Err(
+                syn::Error::new_spanned(ast, "this macro can only be used on structs")
+                    .into_compile_error()
+                    .into(),
+            );
         }
     };
     if fields.is_empty() {
