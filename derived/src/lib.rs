@@ -183,7 +183,9 @@ pub fn derive_gtor(input: TokenStream) -> TokenStream {
 ///
 /// The following attributes are available:
 /// - `#[phantom]`: Skips the stor for the specified field(s), assuming they are
-/// [`PhantomData`](core::marker::PhantomData) fields
+/// [`PhantomData`](core::marker::PhantomData) fields. This has the same effect as `#[stor_skip]`
+/// but it makes it easier to use with the other macros, avoiding the need to write skips for phantom
+/// fields specifically
 /// - `#[stor_skip]`: Skips the stor for the specified field(s)
 ///
 /// ## Doc-comments

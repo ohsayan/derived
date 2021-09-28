@@ -2,7 +2,7 @@
 
 All changes to this project will be noted in this file
 
-## Unreleased
+## 0.4.0
 
 ### Additions
 
