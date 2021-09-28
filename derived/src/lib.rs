@@ -19,6 +19,7 @@
 use proc_macro::TokenStream;
 #[macro_use]
 mod macros;
+mod constdef;
 mod ctor;
 mod gtor;
 mod stor;
@@ -197,4 +198,9 @@ pub fn derive_gtor(input: TokenStream) -> TokenStream {
 ///
 pub fn derive_stor(input: TokenStream) -> TokenStream {
     stor::derive_stor(input)
+}
+
+#[proc_macro_derive(Constdef)]
+pub fn derive_constdef(input: TokenStream) -> TokenStream {
+    constdef::derive(input)
 }

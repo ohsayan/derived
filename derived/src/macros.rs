@@ -1,15 +1,19 @@
 //! Internal macros
 //!
 
+macro_rules! genset {
+    ($($ty:ty),*) => {{
+        let mut hs = ::std::collections::HashSet::new();
+        $(hs.insert(stringify!($ty));)*
+        hs
+    }};
+}
+
 macro_rules! gen_typeset {
     ($($ty:ty),*) => {
         lazy_static::lazy_static! {
             pub static ref TYCOPY: ::std::collections::HashSet<&'static str> = {
-                let mut hs = ::std::collections::HashSet::new();
-                $(
-                    hs.insert(stringify!($ty));
-                )*
-                hs
+                genset!($($ty),*)
             };
         }
     };
