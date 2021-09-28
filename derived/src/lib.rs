@@ -90,11 +90,7 @@ pub fn derive_ctor(input: TokenStream) -> TokenStream {
     };
     let func = match util::get_func_header(&ast.attrs, ATTR_CONST_CTOR) {
         Ok(f) => f,
-        Err(_) => {
-            return syn::Error::new_spanned(&ast, "Duplicate attributes found for `const_ctor`")
-                .into_compile_error()
-                .into()
-        }
+        Err(e) => return e,
     };
     if fields.is_empty() {
         // handle fast case: empty struct
@@ -188,11 +184,7 @@ pub fn derive_gtor(input: TokenStream) -> TokenStream {
     };
     let func = match util::get_func_header(&ast.attrs, ATTR_CONST_GTOR) {
         Ok(f) => f,
-        Err(_) => {
-            return syn::Error::new_spanned(&ast, "Duplicate attributes found for `const_gtor`")
-                .into_compile_error()
-                .into()
-        }
+        Err(e) => return e,
     };
     if !fields.is_empty() {
         let mut q = quote!();

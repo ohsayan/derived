@@ -1,5 +1,6 @@
 use proc_macro::TokenStream;
 use quote::quote;
+use syn::spanned::Spanned;
 use syn::Attribute;
 use syn::{Data, DataStruct, DeriveInput, Fields, Ident, Type};
 
@@ -37,10 +38,14 @@ pub fn get_struct_field_names(ast: &DeriveInput) -> Result<Vec<(Ident, Type)>, T
 pub fn get_func_header(
     attrs: &[Attribute],
     target: &str,
-) -> Result<quote::__private::TokenStream, ()> {
+) -> Result<quote::__private::TokenStream, TokenStream> {
+    let mut span = None;
     let has_attr = attrs
         .iter()
-        .filter(|attr| attr.path.is_ident(target))
+        .filter(|attr| {
+            span = Some((*attr).span());
+            attr.path.is_ident(target)
+        })
         .count();
     match has_attr {
         0 => Ok(quote! {
@@ -49,6 +54,11 @@ pub fn get_func_header(
         1 => Ok(quote! {
             pub const fn
         }),
-        _ => Err(())
+        _ => Err(syn::Error::new(
+            span.unwrap(),
+            format!("Found duplicate attributes for `{}`", target),
+        )
+        .into_compile_error()
+        .into()),
     }
 }
