@@ -9,6 +9,7 @@ use util::TYCOPY;
 
 /// The attribute for constant (compile-time) getters
 const ATTR_CONST_GTOR: &str = "const_gtor";
+const ATTR_GTOR_COPY: &str = "gtor_copy";
 
 pub(crate) fn derive_gtor(input: TokenStream) -> TokenStream {
     let ast: DeriveInput = parse_macro_input!(input);
@@ -28,7 +29,9 @@ pub(crate) fn derive_gtor(input: TokenStream) -> TokenStream {
     };
     if !fields.is_empty() {
         let mut q = quote!();
-        for (field, ty) in fields {
+        for (field, ty, attrs) in fields {
+            let is_explicitly_copy =
+                ok_else_ret!(util::single_instance_of_attr(attrs, ATTR_GTOR_COPY));
             let field_name_str = field.to_string();
             let mut fname = "get_".to_owned();
             fname.push_str(&field_name_str);
@@ -49,7 +52,7 @@ pub(crate) fn derive_gtor(input: TokenStream) -> TokenStream {
                 _ => false,
             };
 
-            if is_prim {
+            if is_prim || is_explicitly_copy {
                 // a copy-able type
                 q = quote! {
                     #q

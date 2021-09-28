@@ -65,7 +65,7 @@ pub fn derive_ctor(input: TokenStream) -> TokenStream {
     ctor::derive_ctor(input)
 }
 
-#[proc_macro_derive(Gtor, attributes(const_gtor))]
+#[proc_macro_derive(Gtor, attributes(const_gtor, gtor_copy))]
 /// # Gtor: Get the getters derived
 ///
 /// Gtor takes the fields in order and generates getters for each field. For example,

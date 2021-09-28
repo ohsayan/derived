@@ -33,7 +33,7 @@ pub fn derive_ctor(input: TokenStream) -> TokenStream {
         // handle extended case: struct with fields
         let mut tokens = quote! {};
         let mut self_args = quote! {};
-        for (fname, ty) in fields {
+        for (fname, ty, _) in fields {
             tokens = quote! {
                 #tokens
                 #fname: #ty,

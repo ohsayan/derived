@@ -13,7 +13,7 @@ pub(crate) fn derive_stor(input: TokenStream) -> TokenStream {
     let fields = ok_else_ret!(util::get_struct_field_names(&ast));
     if !fields.is_empty() {
         let mut q = quote!();
-        for (field, ty) in fields {
+        for (field, ty, _) in fields {
             let field_name_str = field.to_string();
             let mut fname = "set_".to_owned();
             fname.push_str(&field_name_str);
