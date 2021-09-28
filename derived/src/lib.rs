@@ -5,9 +5,10 @@
 //!
 //! ## Features
 //!
-//! - `Ctor`: To generate constructors
-//! - `Gtor`: To generate getters
-//! - `Stor`: To generate setters
+//! - [`Ctor`]: To generate constructors
+//! - [`Gtor`]: To generate getters
+//! - [`Stor`]: To generate setters
+//! - [`Constdef`]: To generate constant, compile-time default implementations
 //! - Full lifetimes, generics and `where` clause support
 //! - Use the `gtor` attribute to get either immutable or mutable or both references (see example below)
 //! - Skip generation of setters or getters with the `#[stor_skip]` or `#[gtor_skip]` attributes for
@@ -201,6 +202,36 @@ pub fn derive_stor(input: TokenStream) -> TokenStream {
 }
 
 #[proc_macro_derive(Constdef)]
+/// # `Constdef`: Constant, compile-time default implementations
+///
+/// Implementations of the [`Default`](core::default::Default) trait cannot unfortunately be called
+/// in `const` contexts due to the [current limitations with traits per RFC 911](https://rust-lang.github.io/rfcs/0911-const-fn.html#detailed-design).
+/// To overcome this limitation, this crate _hacks around_ the problem by evaluating types at compile time and substituting requisite values.
+///
+/// ## Example
+///
+/// ```
+/// use derived::Constdef;
+///
+/// #[derive(Constdef)]
+/// struct MyDefault {
+///     a: u8,
+///     b: bool,
+///     c: char,
+///     d: f32,
+/// }
+///
+/// const DEF: MyDefault = MyDefault::default();
+/// assert_eq!(DEF.a, 0);
+/// assert_eq!(DEF.b, false);
+/// assert_eq!(DEF.c, '\0');
+/// assert_eq!(DEF.d, 0.0);
+///
+/// // you can also use it with the normal unwrap_or_default
+/// let mut x: Option<MyDefault> = None;
+/// let y = x.unwrap_or_default();
+/// assert_eq!(y.c, '\0');
+/// ```
 pub fn derive_constdef(input: TokenStream) -> TokenStream {
     constdef::derive(input)
 }

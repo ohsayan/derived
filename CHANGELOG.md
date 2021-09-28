@@ -2,6 +2,13 @@
 
 All changes to this project will be noted in this file
 
+### 0.4.1
+
+### Additions
+
+- Added the `Constdef` (`#[derive(Constdef)]`) derive macro for generating compile-time, constant
+  default implementations
+
 ## 0.4.0
 
 ### Additions
