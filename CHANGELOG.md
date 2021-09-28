@@ -6,10 +6,11 @@ All changes to this project will be noted in this file
 
 ### Additions
 
-- Added the `#[const_gtor]` and `#[const_ctor]` attributes for providing compile-time ctors and getters
+- Added the `#[gtor_const]` and `#[ctor_const]` attributes for providing compile-time ctors and getters
 - Added the `#[gtor_copy]` attribute for compound `Copy` types (UDFs)
 - Added the `#[gtor_skip]` attribute for skipping gtors for specific fields
 - Added the `#[stor_skip]` attribute for skipping stors for specific fields
+- Added the `#[phantom]` attribute for skipping ctors, gtors and stors for `PhantomData` fields
 
 ## 0.3.1
 

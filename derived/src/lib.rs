@@ -19,7 +19,7 @@ mod gtor;
 mod stor;
 mod util;
 
-#[proc_macro_derive(Ctor, attributes(ctor_const))]
+#[proc_macro_derive(Ctor, attributes(ctor_const, phantom))]
 /// # Ctor: Get a constructor derived
 ///
 /// The [`Ctor`] macro will take the fields in the order they are declared and generate a
@@ -65,7 +65,7 @@ pub fn derive_ctor(input: TokenStream) -> TokenStream {
     ctor::derive_ctor(input)
 }
 
-#[proc_macro_derive(Gtor, attributes(gtor_const, gtor_copy, gtor_skip))]
+#[proc_macro_derive(Gtor, attributes(gtor_const, gtor_copy, gtor_skip, phantom))]
 /// # Gtor: Get the getters derived
 ///
 /// Gtor takes the fields in order and generates getters for each field. For example,
@@ -110,7 +110,7 @@ pub fn derive_gtor(input: TokenStream) -> TokenStream {
     gtor::derive_gtor(input)
 }
 
-#[proc_macro_derive(Stor, attributes(stor_skip))]
+#[proc_macro_derive(Stor, attributes(stor_skip, phantom))]
 /// # Stor: Get the setters derived
 ///
 /// Stor takes the fields in order and generates setters for each field. For example,

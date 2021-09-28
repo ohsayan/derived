@@ -17,8 +17,9 @@ pub(crate) fn derive_stor(input: TokenStream) -> TokenStream {
         let mut q = quote!();
         for (field, ty, attrs) in fields {
             let is_skipped = ok_else_ret!(util::single_instance_of_attr(&attrs, ATTR_STOR_SKIP));
-            if !is_skipped {
-                // not skipped, so go ahead
+            let is_phantom = ok_else_ret!(util::single_instance_of_attr(attrs, util::ATTR_PHANTOM));
+            if !(is_skipped && is_phantom) {
+                // not skipped or phantom, so go ahead
                 let field_name_str = field.to_string();
                 let mut fname = "set_".to_owned();
                 fname.push_str(&field_name_str);

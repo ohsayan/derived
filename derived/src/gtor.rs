@@ -31,10 +31,11 @@ pub(crate) fn derive_gtor(input: TokenStream) -> TokenStream {
     if !fields.is_empty() {
         let mut q = quote!();
         for (field, ty, attrs) in fields {
+            let is_phantom = ok_else_ret!(util::single_instance_of_attr(attrs, util::ATTR_PHANTOM));
             let is_explicitly_copy =
                 ok_else_ret!(util::single_instance_of_attr(attrs, ATTR_GTOR_COPY));
             let is_skipped = ok_else_ret!(util::single_instance_of_attr(attrs, ATTR_GTOR_SKIP));
-            if is_skipped && is_explicitly_copy {
+            if (is_skipped && is_explicitly_copy) || (is_explicitly_copy && is_phantom) {
                 // both at once, huh?
                 return syn::Error::new(
                     field.span(),
@@ -43,8 +44,8 @@ pub(crate) fn derive_gtor(input: TokenStream) -> TokenStream {
                 .into_compile_error()
                 .into();
             }
-            if !is_skipped {
-                // not skipped, so add gtor
+            if !(is_skipped && is_phantom) {
+                // not skipped and not phantom, so add gtor
                 let field_name_str = field.to_string();
                 let mut fname = "get_".to_owned();
                 fname.push_str(&field_name_str);

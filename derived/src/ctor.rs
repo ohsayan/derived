@@ -33,14 +33,23 @@ pub fn derive_ctor(input: TokenStream) -> TokenStream {
         // handle extended case: struct with fields
         let mut tokens = quote! {};
         let mut self_args = quote! {};
-        for (fname, ty, _) in fields {
-            tokens = quote! {
-                #tokens
-                #fname: #ty,
-            };
-            self_args = quote! {
-                #self_args
-                #fname,
+        for (fname, ty, attrs) in fields {
+            let is_phantom = ok_else_ret!(util::single_instance_of_attr(attrs, util::ATTR_PHANTOM));
+            if !is_phantom {
+                // not a phantomdata struct, add it
+                tokens = quote! {
+                    #tokens
+                    #fname: #ty,
+                };
+                self_args = quote! {
+                    #self_args
+                    #fname,
+                };
+            } else {
+                self_args = quote! {
+                    #self_args
+                    #fname: ::core::marker::PhantomData,
+                };
             }
         }
         let tokens = quote! {

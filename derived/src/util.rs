@@ -4,6 +4,8 @@ use syn::spanned::Spanned;
 use syn::Attribute;
 use syn::{Data, DataStruct, DeriveInput, Fields, Ident, Type};
 
+pub(crate) const ATTR_PHANTOM: &str = "phantom";
+
 gen_typeset! {
     u8, i8, u16, i16, u32, i32, u64, i64, u128, i128, str, bool, usize, isize, char, f32, f64
 }

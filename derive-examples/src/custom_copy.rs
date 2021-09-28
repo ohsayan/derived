@@ -21,5 +21,6 @@ fn test_holder() {
     let holder = Holder::new(copyable);
     let y = holder.copyable;
     // notice the copy above ^^ (copyable is copied to holder, while the original remains)
-    assert_eq!(y.val_a, copyable.val_b);
+    assert_eq!(y.val_a, copyable.val_a);
+    assert_eq!(y.val_b, copyable.val_b);
 }

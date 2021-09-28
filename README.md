@@ -13,6 +13,7 @@ The `derived` crate provides macros that can simplify all the boring stuff, like
 - Skip generation of setters or getters with the `#[stor_skip]` or `#[gtor_skip]` attributes for
   specific fields
 - Make ctors and gtors `const` with the `#[ctor_const]` and `#[gtor_const]` attributes
+- Skip ctors, gtors and stors for `PhantomData` fields with the `#[phantom]` attribute
 
 ## Example: Generating constructors
 
