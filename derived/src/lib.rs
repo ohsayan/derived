@@ -19,7 +19,7 @@ mod gtor;
 mod stor;
 mod util;
 
-#[proc_macro_derive(Ctor, attributes(const_ctor))]
+#[proc_macro_derive(Ctor, attributes(ctor_const))]
 /// # Ctor: Get a constructor derived
 ///
 /// The [`Ctor`] macro will take the fields in the order they are declared and generate a
@@ -43,7 +43,7 @@ mod util;
 ///
 /// ## Constant constructors
 ///
-/// To make your constructors `const`, simply add the `#[const_ctor]` attribute to the top
+/// To make your constructors `const`, simply add the `#[ctor_const]` attribute to the top
 /// of your struct.
 ///
 /// ### Example
@@ -52,7 +52,7 @@ mod util;
 /// use derived::Ctor;
 ///
 /// #[derive(Ctor)]
-/// #[const_ctor]
+/// #[ctor_const]
 /// pub struct MyConst {
 ///     a: u8,
 ///     b: u8,
@@ -65,7 +65,7 @@ pub fn derive_ctor(input: TokenStream) -> TokenStream {
     ctor::derive_ctor(input)
 }
 
-#[proc_macro_derive(Gtor, attributes(const_gtor, gtor_copy, gtor_skip))]
+#[proc_macro_derive(Gtor, attributes(gtor_const, gtor_copy, gtor_skip))]
 /// # Gtor: Get the getters derived
 ///
 /// Gtor takes the fields in order and generates getters for each field. For example,
@@ -92,7 +92,7 @@ pub fn derive_ctor(input: TokenStream) -> TokenStream {
 /// ### Constant getters
 ///
 /// If you need your getters to be `const` (to use it in constant contexts), you can simply
-/// add the `#[const_gtor]` attribute.
+/// add the `#[gtor_const]` attribute.
 ///
 /// ## Example
 /// ```

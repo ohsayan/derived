@@ -10,6 +10,9 @@ The `derived` crate provides macros that can simplify all the boring stuff, like
 - `Gtor`: To generate getters
 - `Stor`: To generate setters
 - Full lifetimes, generics and `where` clause support
+- Skip generation of setters or getters with the `#[stor_skip]` or `#[gtor_skip]` attributes for
+  specific fields
+- Make ctors and gtors `const` with the `#[ctor_const]` and `#[gtor_const]` attributes
 
 ## Example: Generating constructors
 

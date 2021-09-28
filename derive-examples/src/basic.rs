@@ -4,8 +4,8 @@
 use derived::{Ctor, Gtor, Stor};
 
 #[derive(Ctor, Gtor, Stor)]
-#[const_ctor] // makes the constructor a const fn
-#[const_gtor] // makes the getters constant
+#[ctor_const] // makes the constructor a const fn
+#[gtor_const] // makes the getters constant
 pub struct User {
     name: &'static str,
     email: &'static str,

@@ -8,7 +8,7 @@ use syn::{parse_macro_input, DeriveInput, Ident, Type};
 use util::TYCOPY;
 
 /// The attribute for constant (compile-time) getters
-const ATTR_CONST_GTOR: &str = "const_gtor";
+const ATTR_CONST_GTOR: &str = "gtor_const";
 const ATTR_GTOR_COPY: &str = "gtor_copy";
 const ATTR_GTOR_SKIP: &str = "gtor_skip";
 

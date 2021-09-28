@@ -3,7 +3,7 @@ use derived::{Ctor, Gtor};
 #[derive(Ctor, Gtor)]
 struct TwoFieldStruct {
     a: u8,
-    #[gtor_skip]
+    #[gtor_skip] // no getters will be generated for this field
     getless: bool,
 }
 

@@ -6,7 +6,7 @@ use derived::{Ctor, Stor};
 #[derive(Ctor, Stor)]
 struct X {
     a: u8,
-    #[stor_skip]
+    #[stor_skip] // no setters will be generated for this field
     unsettable: u8,
 }
 

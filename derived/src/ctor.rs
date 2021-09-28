@@ -6,7 +6,7 @@ use proc_macro::TokenStream;
 use quote::quote;
 use syn::{parse_macro_input, DeriveInput};
 
-const ATTR_CONST_CTOR: &str = "const_ctor";
+const ATTR_CONST_CTOR: &str = "ctor_const";
 
 pub fn derive_ctor(input: TokenStream) -> TokenStream {
     let ast: DeriveInput = parse_macro_input!(input);
