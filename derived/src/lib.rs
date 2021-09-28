@@ -12,12 +12,10 @@
 //!
 
 use proc_macro::TokenStream;
-use quote::quote;
-use quote::ToTokens;
+use quote::{quote, ToTokens};
 use std::collections::HashSet;
-use syn::DataStruct;
-use syn::{parse_macro_input, Data, DeriveInput, Fields};
-use syn::{Ident, Type};
+use syn::{parse_macro_input, DeriveInput, Ident, Type};
+mod util;
 
 macro_rules! gen_typeset {
     ($($ty:ty),*) => {
@@ -37,35 +35,7 @@ gen_typeset! {
     u8, i8, u16, i16, u32, i32, u64, i64, u128, i128, str, bool, usize, isize, char, f32, f64
 }
 
-fn get_struct_field_names(ast: &DeriveInput) -> Result<Vec<(Ident, Type)>, TokenStream> {
-    let fields = match &ast.data {
-        Data::Struct(DataStruct {
-            fields: Fields::Named(fields),
-            ..
-        }) => &fields.named,
-        _ => {
-            return Err(
-                syn::Error::new_spanned(ast, "this macro can only be used on structs")
-                    .into_compile_error()
-                    .into(),
-            );
-        }
-    };
-    if fields.is_empty() {
-        Ok(Vec::new())
-    } else {
-        Ok(fields
-            .iter()
-            .map(|field| {
-                let ty = field.ty.clone();
-                let fname = field.ident.as_ref().unwrap().clone();
-                (fname, ty)
-            })
-            .collect())
-    }
-}
-
-#[proc_macro_derive(Ctor)]
+#[proc_macro_derive(Ctor, attributes(const_ctor))]
 /// # Ctor: Get a constructor derived
 ///
 /// The [`Ctor`] macro will take the fields in the order they are declared and generate a
@@ -89,16 +59,29 @@ pub fn derive_ctor(input: TokenStream) -> TokenStream {
     let ast: DeriveInput = parse_macro_input!(input);
     let struct_name = ast.ident.clone();
     let (impl_gen, ty_gen, where_clause) = &ast.generics.split_for_impl();
-    let fields = match get_struct_field_names(&ast) {
+    let fields = match util::get_struct_field_names(&ast) {
         Ok(f) => f,
         Err(e) => return e,
+    };
+    let is_const = ast
+        .attrs
+        .iter()
+        .any(|attr| attr.path.is_ident("const_ctor"));
+    let func = if is_const {
+        quote! {
+            pub const fn
+        }
+    } else {
+        quote! {
+            pub fn
+        }
     };
     if fields.is_empty() {
         // handle fast case: empty struct
         return {
             quote! {
                 impl #impl_gen #struct_name #ty_gen #where_clause {
-                    pub fn new() -> Self {
+                    #func new() -> Self {
                         Self {}
                     }
                 }
@@ -121,7 +104,7 @@ pub fn derive_ctor(input: TokenStream) -> TokenStream {
         }
         let tokens = quote! {
             impl #impl_gen #struct_name #ty_gen #where_clause {
-                pub fn new(
+                #func new(
                     #tokens
                 ) -> #struct_name #ty_gen {
                     Self {
@@ -174,7 +157,7 @@ pub fn derive_gtor(input: TokenStream) -> TokenStream {
     let ast: DeriveInput = parse_macro_input!(input);
     let struct_name = ast.ident.clone();
     let (impl_gen, ty_gen, where_clause) = &ast.generics.split_for_impl();
-    let fields = match get_struct_field_names(&ast) {
+    let fields = match util::get_struct_field_names(&ast) {
         Ok(f) => f,
         Err(e) => return e,
     };
@@ -266,7 +249,7 @@ pub fn derive_stor(input: TokenStream) -> TokenStream {
     let ast: DeriveInput = parse_macro_input!(input);
     let struct_name = ast.ident.clone();
     let (impl_gen, ty_gen, where_clause) = &ast.generics.split_for_impl();
-    let fields = match get_struct_field_names(&ast) {
+    let fields = match util::get_struct_field_names(&ast) {
         Ok(f) => f,
         Err(e) => return e,
     };
