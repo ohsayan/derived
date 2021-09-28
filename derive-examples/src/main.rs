@@ -2,6 +2,7 @@ use derived::{Ctor, Gtor, Stor};
 
 #[derive(Ctor, Gtor, Stor)]
 #[const_ctor] // makes the constructor a const fn
+#[const_gtor] // makes the getters constant
 pub struct User {
     name: &'static str,
     email: &'static str,
@@ -12,6 +13,7 @@ pub struct User {
 
 // use the constant ctor
 const _USER: User = User::new("sayan", "ohsayan@outlook.com", true, 1, u64::MAX);
+const _UNAME: &'static str = _USER.get_name();
 
 #[derive(Ctor)]
 struct MyType<'a, T: ToString + Copy> {

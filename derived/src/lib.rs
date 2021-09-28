@@ -17,6 +17,9 @@ use std::collections::HashSet;
 use syn::{parse_macro_input, DeriveInput, Ident, Type};
 mod util;
 
+const ATTR_CONST_CTOR: &str = "const_ctor";
+const ATTR_CONST_GTOR: &str = "const_gtor";
+
 macro_rules! gen_typeset {
     ($($ty:ty),*) => {
         lazy_static::lazy_static! {
@@ -41,6 +44,7 @@ gen_typeset! {
 /// The [`Ctor`] macro will take the fields in the order they are declared and generate a
 /// constructor, that is a `YourStruct::new()` function.
 ///
+///
 /// ## Example
 /// ```
 /// use derived::Ctor;
@@ -55,6 +59,27 @@ gen_typeset! {
 /// assert_eq!(ms.int, 1);
 /// assert_eq!(ms.unsigned_int, -1);
 /// ```
+///
+/// ## Constant constructors
+///
+/// To make your constructors `const`, simply add the `#[const_ctor]` attribute to the top
+/// of your struct.
+///
+/// ### Example
+///
+/// ```
+/// use derived::Ctor;
+///
+/// #[derive(Ctor)]
+/// #[const_ctor]
+/// pub struct MyConst {
+///     a: u8,
+///     b: u8,
+/// }
+/// // you can now use it in constant contexts
+/// const MC: MyConst = MyConst::new(1, 2);
+/// ```
+///
 pub fn derive_ctor(input: TokenStream) -> TokenStream {
     let ast: DeriveInput = parse_macro_input!(input);
     let struct_name = ast.ident.clone();
@@ -63,17 +88,12 @@ pub fn derive_ctor(input: TokenStream) -> TokenStream {
         Ok(f) => f,
         Err(e) => return e,
     };
-    let is_const = ast
-        .attrs
-        .iter()
-        .any(|attr| attr.path.is_ident("const_ctor"));
-    let func = if is_const {
-        quote! {
-            pub const fn
-        }
-    } else {
-        quote! {
-            pub fn
+    let func = match util::get_func_header(&ast.attrs, ATTR_CONST_CTOR) {
+        Ok(f) => f,
+        Err(_) => {
+            return syn::Error::new_spanned(&ast, "Duplicate attributes found for `const_ctor`")
+                .into_compile_error()
+                .into()
         }
     };
     if fields.is_empty() {
@@ -117,7 +137,7 @@ pub fn derive_ctor(input: TokenStream) -> TokenStream {
     }
 }
 
-#[proc_macro_derive(Gtor)]
+#[proc_macro_derive(Gtor, attributes(const_gtor))]
 /// # Gtor: Get the getters derived
 ///
 /// Gtor takes the fields in order and generates getters for each field. For example,
@@ -141,6 +161,11 @@ pub fn derive_ctor(input: TokenStream) -> TokenStream {
 /// Returns the value for the `<struct_field>` field in struct [`<struct_name>`]
 /// ```
 ///
+/// ### Constant getters
+///
+/// If you need your getters to be `const` (to use it in constant contexts), you can simply
+/// add the `#[const_gtor]` attribute.
+///
 /// ## Example
 /// ```
 /// use derived::Gtor;
@@ -160,6 +185,14 @@ pub fn derive_gtor(input: TokenStream) -> TokenStream {
     let fields = match util::get_struct_field_names(&ast) {
         Ok(f) => f,
         Err(e) => return e,
+    };
+    let func = match util::get_func_header(&ast.attrs, ATTR_CONST_GTOR) {
+        Ok(f) => f,
+        Err(_) => {
+            return syn::Error::new_spanned(&ast, "Duplicate attributes found for `const_gtor`")
+                .into_compile_error()
+                .into()
+        }
     };
     if !fields.is_empty() {
         let mut q = quote!();
@@ -189,7 +222,7 @@ pub fn derive_gtor(input: TokenStream) -> TokenStream {
                 q = quote! {
                     #q
                     #[doc = #doc_comment]
-                    pub fn #fname(&self) -> #ty {
+                    #func #fname(&self) -> #ty {
                         self.#field
                     }
                 };
@@ -197,7 +230,7 @@ pub fn derive_gtor(input: TokenStream) -> TokenStream {
                 q = quote! {
                     #q
                     #[doc = #doc_comment]
-                    pub fn #fname(&self) -> &#ty {
+                    #func #fname(&self) -> &#ty {
                         &self.#field
                     }
                 };

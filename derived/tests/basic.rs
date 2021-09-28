@@ -41,7 +41,7 @@ fn test_generics_ctor() {
         id: u64,
     }
     let x: MyStruct<f32> = MyStruct::new(10.23, 1);
-    assert_eq!(x.value.to_string(), "10.32");
+    assert_eq!(x.value.to_string(), "10.23");
     assert_eq!(x.id, 1);
 }
 
@@ -55,6 +55,6 @@ fn test_generics_gtor() {
     let x: MyStruct<f32> = MyStruct::new(10.23, 1);
     // need a reference because get_value can't "look into" generic parameters to know if
     // they're copy types
-    assert_eq!(x.get_value(), &10.32);
+    assert_eq!(x.get_value(), &10.23);
     assert_eq!(x.get_id(), 1);
 }
