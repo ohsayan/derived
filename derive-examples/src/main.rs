@@ -3,6 +3,8 @@ mod basic;
 #[cfg(test)]
 mod custom_copy;
 #[cfg(test)]
+mod get_get_mut;
+#[cfg(test)]
 mod gtor_skip;
 #[cfg(test)]
 mod phantom;

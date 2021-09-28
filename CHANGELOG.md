@@ -11,6 +11,8 @@ All changes to this project will be noted in this file
 - Added the `#[gtor_skip]` attribute for skipping gtors for specific fields
 - Added the `#[stor_skip]` attribute for skipping stors for specific fields
 - Added the `#[phantom]` attribute for skipping ctors, gtors and stors for `PhantomData` fields
+- Added the `gtor` attribute for passing `#[gtor(get, get_mut)]` to make only mutable getters, only
+  immutable getters, or both
 
 ## 0.3.1
 

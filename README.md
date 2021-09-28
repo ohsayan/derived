@@ -10,6 +10,7 @@ The `derived` crate provides macros that can simplify all the boring stuff, like
 - `Gtor`: To generate getters
 - `Stor`: To generate setters
 - Full lifetimes, generics and `where` clause support
+- Use the `gtor` attribute to get either immutable or mutable or both references (see example below)
 - Skip generation of setters or getters with the `#[stor_skip]` or `#[gtor_skip]` attributes for
   specific fields
 - Make ctors and gtors `const` with the `#[ctor_const]` and `#[gtor_const]` attributes
@@ -85,6 +86,30 @@ let mut x = MyTag::new(&10i32, 20); // this will have type MyTag<i32>
 assert_eq!(x.get_val().to_string(), "10");
 x.set_val(11);
 assert_eq!(x.get_val().to_string(), "11");
+```
+
+## Example: `get_mut` and `get`
+
+```rust
+use derived::{Ctor, Gtor};
+
+#[derive(Ctor, Gtor)]
+#[gtor(get, get_mut)]
+pub struct Mutable {
+    x_axis: u8,
+    y_axis: u8,
+}
+
+#[test]
+fn test_get_and_get_mut() {
+    let mut m = Mutable::new(0, 0);
+    // move x by 1 unit
+    *m.get_x_axis_mut() = 1;
+    // move y by 2 units
+    *m.get_y_axis_mut() = 2;
+    assert_eq!(m.get_x_axis(), 1);
+    assert_eq!(m.get_y_axis(), 2);
+}
 ```
 
 ## License
