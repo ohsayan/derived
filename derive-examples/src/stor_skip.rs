@@ -1,0 +1,18 @@
+use derived::{Ctor, Stor};
+
+#[derive(Ctor, Stor)]
+struct X {
+    a: u8,
+    #[stor_skip]
+    unsettable: u8,
+}
+
+#[test]
+fn test_stor_skip() {
+    let mut x = X::new(10, 20);
+    assert_eq!(x.a, 10);
+    assert_eq!(x.unsettable, 20);
+    x.set_a(11);
+    // uncomment to error:
+    // x.set_unsettable(21);
+}

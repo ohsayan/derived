@@ -110,7 +110,7 @@ pub fn derive_gtor(input: TokenStream) -> TokenStream {
     gtor::derive_gtor(input)
 }
 
-#[proc_macro_derive(Stor)]
+#[proc_macro_derive(Stor, attributes(stor_skip))]
 /// # Stor: Get the setters derived
 ///
 /// Stor takes the fields in order and generates setters for each field. For example,
