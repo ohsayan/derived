@@ -1,3 +1,6 @@
+//! This module provides examples of how we can use the macros in a "holistic" manner
+//!
+
 use derived::{Ctor, Gtor, Stor};
 
 #[derive(Ctor, Gtor, Stor)]

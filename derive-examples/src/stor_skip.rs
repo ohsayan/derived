@@ -1,3 +1,6 @@
+//! This module shows us how we can skip the creation of setters for certain fields
+//!
+
 use derived::{Ctor, Stor};
 
 #[derive(Ctor, Stor)]
