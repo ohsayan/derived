@@ -4,6 +4,10 @@ use syn::spanned::Spanned;
 use syn::Attribute;
 use syn::{Data, DataStruct, DeriveInput, Fields, Ident, Type};
 
+gen_typeset! {
+    u8, i8, u16, i16, u32, i32, u64, i64, u128, i128, str, bool, usize, isize, char, f32, f64
+}
+
 /// Returns the field names and their corresponding type from the AST (returning an error
 /// if it isn't a struct)
 pub fn get_struct_field_names(ast: &DeriveInput) -> Result<Vec<(Ident, Type)>, TokenStream> {
