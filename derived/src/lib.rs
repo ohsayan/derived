@@ -5,10 +5,15 @@
 //!
 //! ## Features
 //!
-//! - [`Ctor`]: To generate constructors
-//! - [`Gtor`]: To generate getters
-//! - [`Stor`]: To generate setters
+//! - `Ctor`: To generate constructors
+//! - `Gtor`: To generate getters
+//! - `Stor`: To generate setters
 //! - Full lifetimes, generics and `where` clause support
+//! - Use the `gtor` attribute to get either immutable or mutable or both references (see example below)
+//! - Skip generation of setters or getters with the `#[stor_skip]` or `#[gtor_skip]` attributes for
+//!   specific fields
+//! - Make ctors and gtors `const` with the `#[ctor_const]` and `#[gtor_const]` attributes
+//! - Skip ctors, gtors and stors for `PhantomData` fields with the `#[phantom]` attribute
 //!
 
 use proc_macro::TokenStream;
@@ -40,6 +45,13 @@ mod util;
 /// assert_eq!(ms.int, 1);
 /// assert_eq!(ms.unsigned_int, -1);
 /// ```
+///
+/// # Attributes
+///
+/// The following attributes are available:
+/// - `#[ctor_const]`: Will make your ctors constant
+/// - `#[phantom]`: Will skip the specified [`PhantomData`](core::marker::PhantomData) field(s) in
+/// the constructor, automatically adding `PhantomData` in the requisite positions
 ///
 /// ## Constant constructors
 ///
@@ -73,27 +85,6 @@ pub fn derive_ctor(input: TokenStream) -> TokenStream {
 /// `get_userid` and `get_name`, returning references to the appropriate types. In other
 /// words, `get_*` named methods will be derived per your fields.
 ///
-/// ## Important note
-///
-/// ### References
-/// If any of the fields within the struct are primitive types that do not require large copies,
-/// then the value is returned directly instead of a reference to it:
-/// ```text
-/// u8, i8, u16, i16, u32, i32, u64, i64, u128, i128, str, bool, usize, isize, char, f32, f64
-/// ```
-///
-/// ### Doc-comments
-///
-/// The [`Gtor`] macro will automatically add a doc comment of the form:
-/// ```text
-/// Returns the value for the `<struct_field>` field in struct [`<struct_name>`]
-/// ```
-///
-/// ### Constant getters
-///
-/// If you need your getters to be `const` (to use it in constant contexts), you can simply
-/// add the `#[gtor_const]` attribute.
-///
 /// ## Example
 /// ```
 /// use derived::Gtor;
@@ -106,6 +97,60 @@ pub fn derive_ctor(input: TokenStream) -> TokenStream {
 /// let ms = MyStruct { name: "Sayan".to_owned(), userid: 16 };
 /// assert_eq!(ms.get_name(), "Sayan");
 /// ```
+/// # Attributes
+///
+/// The following attributes are available:
+/// - `#[gtor_const]`: Will make your gtors constant
+/// - `#[gtor_skip]`: Will skip generation of getters for specific fields
+/// - `#[gtor_copy]`: Makes the getter return a copy of the value, assuming that the type is [`Copy`]
+/// - `#[phantom]`: Marks the field as a [`PhantomData`](core::marker::PhantomData) field, hence
+///     skipping getters, setters and ctors for the field
+/// - `#[gtor(...)]`: See [this example](#the-gtor-attribute)
+///
+/// ## The `gtor` attribute
+///
+/// Simply add the gtor attribute like this: `#[gtor(get, get_mut)]` on the top of your struct to
+/// get mutable and immutable reference methods to the fields in your struct.
+///
+/// ### Example
+///
+/// ```
+/// use derived::{Ctor, Gtor};
+/// #[derive(Ctor, Gtor)]
+/// #[gtor(get, get_mut)]
+/// pub struct Mutable {
+///     x_axis: u8,
+///     y_axis: u8,
+/// }
+///
+/// #[test]
+/// fn test_get_and_get_mut() {
+///     let mut m = Mutable::new(0, 0);
+///     // move x by 1 unit
+///     *m.get_x_axis_mut() = 1;
+///     // move y by 2 units
+///     *m.get_y_axis_mut() = 2;
+///     assert_eq!(m.get_x_axis(), 1);
+///     assert_eq!(m.get_y_axis(), 2);
+/// }
+/// ```
+///
+/// # Important notes
+///
+/// ## References
+/// If any of the fields within the struct are primitive types that do not require large copies,
+/// then the value is returned directly instead of a reference to it:
+/// ```text
+/// u8, i8, u16, i16, u32, i32, u64, i64, u128, i128, str, bool, usize, isize, char, f32, f64
+/// ```
+///
+/// ## Doc-comments
+///
+/// The [`Gtor`] macro will automatically add a doc comment of the form:
+/// ```text
+/// Returns the value for the `<struct_field>` field in struct [`<struct_name>`]
+/// ```
+///
 pub fn derive_gtor(input: TokenStream) -> TokenStream {
     gtor::derive_gtor(input)
 }
@@ -117,14 +162,6 @@ pub fn derive_gtor(input: TokenStream) -> TokenStream {
 /// if you have fields named `userid` and `name`, then the setters generated will be
 /// `set_userid` and `set_name`, accepting values for the appropriate types. In other
 /// words, `set_*` named methods will be derived per your fields.
-///
-///
-/// ## Doc-comments
-///
-/// The [`Stor`] macro will automatically add a doc comment of the form:
-/// ```text
-/// Sets the value for the `<struct_field>` field in struct [`<struct_name>`]
-/// ```
 ///
 /// ## Example
 /// ```
@@ -141,6 +178,21 @@ pub fn derive_gtor(input: TokenStream) -> TokenStream {
 /// ms.set_userid(0);
 /// assert_eq!(ms.userid, 0);
 /// ```
+///
+/// # Attributes
+///
+/// The following attributes are available:
+/// - `#[phantom]`: Skips the stor for the specified field(s), assuming they are
+/// [`PhantomData`](core::marker::PhantomData) fields
+/// - `#[stor_skip]`: Skips the stor for the specified field(s)
+///
+/// ## Doc-comments
+///
+/// The [`Stor`] macro will automatically add a doc comment of the form:
+/// ```text
+/// Sets the value for the `<struct_field>` field in struct [`<struct_name>`]
+/// ```
+///
 pub fn derive_stor(input: TokenStream) -> TokenStream {
     stor::derive_stor(input)
 }

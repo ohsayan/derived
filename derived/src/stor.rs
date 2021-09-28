@@ -2,6 +2,7 @@
 //!
 
 use crate::util;
+use crate::util::ATTR_PHANTOM;
 use proc_macro::TokenStream;
 use quote::quote;
 use syn::{parse_macro_input, DeriveInput, Ident};
@@ -11,6 +12,14 @@ const ATTR_STOR_SKIP: &str = "stor_skip";
 pub(crate) fn derive_stor(input: TokenStream) -> TokenStream {
     let ast: DeriveInput = parse_macro_input!(input);
     let struct_name = ast.ident.clone();
+    err_if_subattr_on_primary_attr!(
+        "entire struct",
+        // a struct cannot be entirely phantom
+        ATTR_PHANTOM in ast.attrs,
+        // marking an entire struct to be skipped is useless
+        ATTR_STOR_SKIP in ast.attrs,
+    );
+
     let (impl_gen, ty_gen, where_clause) = &ast.generics.split_for_impl();
     let fields = ok_else_ret!(util::get_struct_field_names(&ast));
     if !fields.is_empty() {

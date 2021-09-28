@@ -23,3 +23,16 @@ macro_rules! ok_else_ret {
         }
     };
 }
+
+macro_rules! err_if_subattr_on_primary_attr {
+    ($callpos:literal, $($attr:ident in $attrs:expr),* $(,)*) => {
+        $(if ok_else_ret!($crate::util::single_instance_of_attr(&$attrs, $attr)) {
+            return ::syn::Error::new(
+                ::syn::spanned::Spanned::span($attrs.last().unwrap()),
+                format!("Error: Marking sub-attribute `{}` on the {} is invalid!", $attr, $callpos),
+            )
+            .into_compile_error()
+            .into();
+        })*
+    };
+}

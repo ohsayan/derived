@@ -2,6 +2,7 @@
 //!
 
 use crate::util;
+use crate::util::ATTR_PHANTOM;
 use proc_macro::TokenStream;
 use quote::{quote, ToTokens};
 use syn::{parse_macro_input, punctuated::Punctuated, DeriveInput, Ident, Meta, Token, Type};
@@ -15,6 +16,16 @@ const ATTR_GTOR_SKIP: &str = "gtor_skip";
 pub(crate) fn derive_gtor(input: TokenStream) -> TokenStream {
     let ast: DeriveInput = parse_macro_input!(input);
     let struct_name = ast.ident.clone();
+    err_if_subattr_on_primary_attr!(
+        "entire struct",
+        // a struct cannot be entirely phantom
+        ATTR_PHANTOM in ast.attrs,
+        // marking a struct to be copy is invalid
+        ATTR_GTOR_COPY in ast.attrs,
+        // marking an entire struct to be skipped is useless
+        ATTR_GTOR_SKIP in ast.attrs,
+    );
+
     let mut attrlist: ::std::collections::HashSet<String> = Default::default();
     for attr in &ast.attrs {
         if attr.path.is_ident("gtor") {
@@ -45,6 +56,11 @@ pub(crate) fn derive_gtor(input: TokenStream) -> TokenStream {
     if !fields.is_empty() {
         let mut q = quote!();
         for (field, ty, attrs) in fields {
+            err_if_subattr_on_primary_attr!(
+                "field",
+                // marking const_gtor on a field is invalid
+                ATTR_CONST_GTOR in attrs,
+            );
             let is_phantom = ok_else_ret!(util::single_instance_of_attr(attrs, util::ATTR_PHANTOM));
             let is_explicitly_copy =
                 ok_else_ret!(util::single_instance_of_attr(attrs, ATTR_GTOR_COPY));
