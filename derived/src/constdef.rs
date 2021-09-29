@@ -34,11 +34,11 @@ pub fn derive(input: TokenStream) -> TokenStream {
         let mut self_args = quote! {};
         for (ident, ty, _attrs) in fields {
             let is_const_able = match &ty {
-                Type::Path(t) => self::type_analysis::analyze_type_path_shallow(t),
+                Type::Path(t) => self::type_analysis::analyze_type_path(t),
                 Type::Array(arr) => {
                     let array_len = arr.len.clone().into_token_stream().to_string();
                     let elem = match &*arr.elem {
-                        Type::Path(t) => self::type_analysis::analyze_type_path_shallow(t),
+                        Type::Path(t) => self::type_analysis::analyze_type_path(t),
                         _ => None,
                     };
                     elem.and_then(|e| DefExpr::get_simple_array(e, array_len))

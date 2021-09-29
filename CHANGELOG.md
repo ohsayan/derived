@@ -2,6 +2,13 @@
 
 All changes to this project will be noted in this file
 
+## Unreleased
+
+### Additions
+
+- Added support for full paths to primitives (`std::primitives::u8` or `core::primitives::u8`,
+  for example)
+
 ### 0.4.1
 
 ### Additions
