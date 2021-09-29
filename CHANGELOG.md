@@ -2,12 +2,17 @@
 
 All changes to this project will be noted in this file
 
-## Unreleased
+## 0.4.2
 
 ### Additions
 
 - Added support for full paths to primitives (`std::primitives::u8` or `core::primitives::u8`,
   for example)
+- Added full support for nesting:
+  - Nested arrays
+  - Nested tuples
+  - Nesting arrays in tuples
+  - Nesting tuples in arrays
 
 ### 0.4.1
 
@@ -15,11 +20,6 @@ All changes to this project will be noted in this file
 
 - Added the `Constdef` (`#[derive(Constdef)]`) derive macro for generating compile-time, constant
   default implementations
-- Added full support for nesting:
-  - Nested arrays
-  - Nested tuples
-  - Nesting arrays in tuples
-  - Nesting tuples in arrays
 
 ## 0.4.0
 

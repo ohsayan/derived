@@ -7,10 +7,10 @@ The `derived` crate provides macros that can simplify all the boring stuff, like
 
 ## Features
 
-- ☑️ **`Ctor`**: To generate **constructors**
-- 🤌 **`Gtor`**: To generate **getters**
-- ⚙️ **`Stor`**: To generate **setters**
-- 🪄 **`Constdef`**: To generate **constant, compile-time default implementations**.
+- **`Ctor`**: To generate **constructors**
+- **`Gtor`**: To generate **getters**
+- **`Stor`**: To generate **setters**
+- **`Constdef`**: To generate **constant, compile-time default implementations**.
   > 🎉 **Arrays**, **tuples**, **nested tuples in arrays** and **nested arrays in tuples** included!
 - 💯 **Full lifetimes, generics** and **`where` clause support**
 - 🤓 **Advanced features**:
