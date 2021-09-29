@@ -8,6 +8,8 @@ pub struct Constable {
     x: u8,
     boolean: bool,
     integer: i32,
+    small_float: core::primitive::f32,
+    big_float: std::primitive::f64,
     num_array: [u8; 10],
     bool_array: [bool; 20],
     float_array: [f32; 30],
@@ -23,4 +25,6 @@ fn test_const_default() {
     assert_eq!(CONSTABLE.num_array, [0; 10]);
     assert_eq!(CONSTABLE.bool_array, [false; 20]);
     assert_eq!(CONSTABLE.float_array, [0.0; 30]);
+    assert_eq!(CONSTABLE.small_float, 0.0);
+    assert_eq!(CONSTABLE.big_float, 0.0);
 }
