@@ -210,7 +210,9 @@ pub fn derive_stor(input: TokenStream) -> TokenStream {
 /// Implementations of the [`Default`](core::default::Default) trait cannot unfortunately be called
 /// in `const` contexts due to the [current limitations with traits per RFC 911](https://rust-lang.github.io/rfcs/0911-const-fn.html#detailed-design).
 /// To overcome this limitation, this crate _hacks around_ the problem by evaluating types at
-/// compile time and substituting requisite values.
+/// compile time and substituting requisite values. A `const fn default()` is implemented for the struct,
+/// along with the [`Default`] trait, enabling you to use it other contexts that need you to use
+/// default values, along with `const` contexts.
 ///
 /// ## Example
 ///
@@ -223,6 +225,10 @@ pub fn derive_stor(input: TokenStream) -> TokenStream {
 ///     b: bool,
 ///     c: char,
 ///     d: f32,
+///     e: (),
+///     f: u128,
+///     array: [f32; 16], // arrays too!
+///     char_array: [char; 48],
 /// }
 ///
 /// const DEF: MyDefault = MyDefault::default();
@@ -230,8 +236,13 @@ pub fn derive_stor(input: TokenStream) -> TokenStream {
 /// assert_eq!(DEF.b, false);
 /// assert_eq!(DEF.c, '\0');
 /// assert_eq!(DEF.d, 0.0);
+/// assert_eq!(DEF.e, ());
+/// assert_eq!(DEF.f, 0);
+/// assert_eq!(DEF.array, [0.0; 16]);
+/// assert_eq!(DEF.char_array, ['\0'; 48]);
 ///
-/// // you can also use it with the normal unwrap_or_default
+/// // you can also use it with methods that use `Default` because the trait
+/// // is implemented too
 /// let mut x: Option<MyDefault> = None;
 /// let y = x.unwrap_or_default();
 /// assert_eq!(y.c, '\0');
@@ -244,6 +255,7 @@ pub fn derive_stor(input: TokenStream) -> TokenStream {
 ///     u8, i8, u16, i16, u32, i32, u64, i64, u128, i128, str, bool, usize, isize, char, f32, f64, ()
 ///     ```
 /// - All arrays of the above types are supported
+/// - Nested arrays are not yet supported, but is being worked on
 pub fn derive_constdef(input: TokenStream) -> TokenStream {
     constdef::derive(input)
 }
