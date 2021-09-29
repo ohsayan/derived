@@ -1,6 +1,6 @@
 use super::types::{DefExpr, CONSTDEF};
 use ::quote::{quote, ToTokens};
-use ::syn::{Type, TypePath, TypeTuple};
+use ::syn::{Type, TypeArray, TypePath, TypeTuple};
 
 pub(crate) fn analyze_type_path(t: &TypePath) -> Option<DefExpr> {
     if t.path.segments.len() == 1 {
@@ -47,7 +47,7 @@ fn try_minimize_typepath(tpath: Vec<String>) -> Result<String, Vec<String>> {
     ret.ok_or(tpath)
 }
 
-pub fn recursive_process_tuple(tuple: &TypeTuple) -> Option<DefExpr> {
+pub(super) fn recursive_process_tuple(tuple: &TypeTuple) -> Option<DefExpr> {
     let mut inner_decl = quote! {};
     for elem in tuple.elems.iter() {
         match elem {
@@ -65,8 +65,45 @@ pub fn recursive_process_tuple(tuple: &TypeTuple) -> Option<DefExpr> {
                     #ret,
                 };
             }
+            Type::Array(ref arr) => {
+                let ret = self::process_array(arr)?.into_base_token();
+                inner_decl = quote! {
+                    #inner_decl
+                    #ret,
+                };
+            }
             _ => return None,
         }
     }
     Some(DefExpr::CustomTuple(inner_decl.to_string()))
+}
+
+pub(super) fn process_array(array: &TypeArray) -> Option<DefExpr> {
+    let mut inner_decl = quote! {};
+    let len = &array.len;
+    match &*array.elem {
+        Type::Path(tpath) => {
+            let ret = self::analyze_type_path(tpath)?.into_base_token();
+            inner_decl = quote! {
+                #inner_decl
+                #ret; #len
+            };
+        }
+        Type::Array(arr) => {
+            let ret = self::process_array(arr)?.into_base_token();
+            inner_decl = quote! {
+                #inner_decl
+                #ret; #len
+            };
+        }
+        Type::Tuple(ref tuple) => {
+            let ret = self::recursive_process_tuple(tuple)?.into_base_token();
+            inner_decl = quote! {
+                #inner_decl
+                #ret; #len
+            };
+        }
+        _ => return None,
+    }
+    Some(DefExpr::CustomArray(inner_decl.to_string()))
 }

@@ -220,37 +220,43 @@ pub fn derive_stor(input: TokenStream) -> TokenStream {
 /// use derived::Constdef;
 ///
 /// #[derive(Constdef)]
-/// struct MyDefault {
-///     a: u8,
-///     b: bool,
-///     c: char,
-///     d: f32,
-///     e: (),
-///     f: u128,
-///     array: [f32; 16], // arrays too!
-///     char_array: [char; 48],
-///     // even tuples!
+/// pub struct Constable {
+///     x: u8,
+///     boolean: bool,
+///     integer: i32,
+///     small_float: core::primitive::f32,
+///     big_float: std::primitive::f64,
+///     // arrays? check!
+///     num_array: [u8; 10],
+///     bool_array: [bool; 20],
+///     float_array: [f32; 30],
+///     // tuples? check!
 ///     tuple: (u8, u16),
+///     // nested tuples? check!
 ///     nested_tuple: ((u8, u8), u16),
+///     // nested arrays? check!
+///     nested_array: [[f32; 10]; 10],
+///     // tuples nested in arrays? check!
+///     nested_tuple_in_array: [(u8, u8); 10],
+///     // arrays nested in tuples? check!
+///     nested_array_in_tuple: (u8, [u8; 10]),
 /// }
 ///
-/// const DEF: MyDefault = MyDefault::default();
-/// assert_eq!(DEF.a, 0);
-/// assert_eq!(DEF.b, false);
-/// assert_eq!(DEF.c, '\0');
-/// assert_eq!(DEF.d, 0.0);
-/// assert_eq!(DEF.e, ());
-/// assert_eq!(DEF.f, 0);
-/// assert_eq!(DEF.array, [0.0; 16]);
-/// assert_eq!(DEF.char_array, ['\0'; 48]);
-/// assert_eq!(DEF.tuple, (0, 0));
-/// assert_eq!(DEF.nested_tuple, ((0, 0), 0));
 ///
-/// // you can also use it with methods that use `Default` because the trait
-/// // is implemented too
-/// let mut x: Option<MyDefault> = None;
-/// let y = x.unwrap_or_default();
-/// assert_eq!(y.c, '\0');
+/// const CONSTABLE: Constable = Constable::default();
+/// assert_eq!(CONSTABLE.x, 0);
+/// assert!(!CONSTABLE.boolean);
+/// assert_eq!(CONSTABLE.integer, 0);
+/// assert_eq!(CONSTABLE.num_array, [0; 10]);
+/// assert_eq!(CONSTABLE.bool_array, [false; 20]);
+/// assert_eq!(CONSTABLE.float_array, [0.0; 30]);
+/// assert_eq!(CONSTABLE.small_float, 0.0);
+/// assert_eq!(CONSTABLE.big_float, 0.0);
+/// assert_eq!(CONSTABLE.tuple, (0, 0));
+/// assert_eq!(CONSTABLE.nested_tuple, ((0, 0), 0));
+/// assert_eq!(CONSTABLE.nested_array, [[0.0; 10]; 10]);
+/// assert_eq!(CONSTABLE.nested_tuple_in_array, [(0, 0); 10]);
+/// assert_eq!(CONSTABLE.nested_array_in_tuple, (0, [0; 10]));
 /// ```
 ///
 /// ## Supported types
@@ -261,7 +267,9 @@ pub fn derive_stor(input: TokenStream) -> TokenStream {
 ///     ```
 /// - All arrays of the above types are supported
 /// - All tuples and nested tuples of the above types are supported
-/// - Nested arrays are not yet supported, but is being worked on
+/// - All nested arrays of the above types are supported
+/// - Nesting tuples inside arrays is supported
+/// - Nesting arrays inside tuples is supported
 pub fn derive_constdef(input: TokenStream) -> TokenStream {
     constdef::derive(input)
 }

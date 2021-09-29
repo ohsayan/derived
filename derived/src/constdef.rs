@@ -1,11 +1,11 @@
 use crate::util;
 use ::proc_macro::TokenStream;
-use ::quote::{quote, ToTokens};
+use ::quote::quote;
 use ::syn::{parse_macro_input, DeriveInput, Type};
 // internal modules
 mod type_analysis;
 mod types;
-use self::types::{DefExpr, CONSTDEF};
+use self::types::CONSTDEF;
 
 pub fn derive(input: TokenStream) -> TokenStream {
     let ast: DeriveInput = parse_macro_input!(input);
@@ -35,14 +35,7 @@ pub fn derive(input: TokenStream) -> TokenStream {
         for (ident, ty, _attrs) in fields {
             let is_const_able = match &ty {
                 Type::Path(t) => self::type_analysis::analyze_type_path(t),
-                Type::Array(arr) => {
-                    let array_len = arr.len.clone().into_token_stream().to_string();
-                    let elem = match &*arr.elem {
-                        Type::Path(t) => self::type_analysis::analyze_type_path(t),
-                        _ => None,
-                    };
-                    elem.and_then(|e| DefExpr::get_simple_array(e, array_len))
-                }
+                Type::Array(arr) => self::type_analysis::process_array(arr),
                 Type::Tuple(tp) if tp.elems.is_empty() => CONSTDEF.get("()").cloned(),
                 Type::Tuple(tpl) => self::type_analysis::recursive_process_tuple(tpl),
                 _ => None,
