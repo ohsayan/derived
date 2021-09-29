@@ -10,7 +10,7 @@ The `derived` crate provides macros that can simplify all the boring stuff, like
 - `Ctor`: To generate constructors
 - `Gtor`: To generate getters
 - `Stor`: To generate setters
-- `Constdef`: To generate constant, compile-time default implementations
+- `Constdef`: To generate constant, compile-time default implementations. Arrays included!
 - Full lifetimes, generics and `where` clause support
 - Use the `gtor` attribute to get either immutable or mutable or both references (see example below)
 - Skip generation of setters or getters with the `#[stor_skip]` or `#[gtor_skip]` attributes for

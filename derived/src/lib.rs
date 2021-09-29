@@ -236,6 +236,14 @@ pub fn derive_stor(input: TokenStream) -> TokenStream {
 /// let y = x.unwrap_or_default();
 /// assert_eq!(y.c, '\0');
 /// ```
+///
+/// ## Supported types
+///
+/// - The following primitive types are supported:
+///     ```text
+///     u8, i8, u16, i16, u32, i32, u64, i64, u128, i128, str, bool, usize, isize, char, f32, f64, ()
+///     ```
+/// - All arrays of the above types are supported
 pub fn derive_constdef(input: TokenStream) -> TokenStream {
     constdef::derive(input)
 }
