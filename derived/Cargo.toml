@@ -1,13 +1,15 @@
 [package]
 authors = ["Sayan Nandan <ohsayan@outlook.com>"]
+categories = ["development-tools", "parsing", "rust-patterns"]
 description = "Derive macros for automating the boring stuff"
 documentation = "https://docs.rs/derived"
 edition = "2018"
+keywords = ["macro", "derive", "const", "constructor", "automation"]
 license = "Apache-2.0"
 name = "derived"
 readme = "../README.md"
 repository = "https://github.com/ohsayan/derived"
-version = "0.4.0"
+version = "0.4.1"
 
 [lib]
 proc-macro = true
