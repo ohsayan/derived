@@ -9,6 +9,7 @@ pub enum DefExpr {
     Boolean,
     Float,
     Char,
+    Unit,
 }
 
 macro_rules! gen_defset {
@@ -41,7 +42,8 @@ gen_defset! {
     isize => DefExpr::Number,
     char => DefExpr::Char,
     f32  => DefExpr::Float,
-    f64  => DefExpr::Float
+    f64  => DefExpr::Float,
+    () => DefExpr::Unit
 }
 
 pub fn derive(input: TokenStream) -> TokenStream {
@@ -71,8 +73,9 @@ pub fn derive(input: TokenStream) -> TokenStream {
             let is_const_able = match &ty {
                 Type::Path(t) => {
                     let type_str = t.clone().into_token_stream().to_string();
-                    CONSTDEF.get(type_str.as_str()).map(|v| v.clone())
+                    CONSTDEF.get(type_str.as_str()).cloned()
                 }
+                Type::Tuple(tp) if tp.elems.is_empty() => CONSTDEF.get("()").cloned(),
                 _ => None,
             };
             let ret = match is_const_able {
@@ -109,6 +112,12 @@ pub fn derive(input: TokenStream) -> TokenStream {
                     self_args = quote! {
                         #self_args
                         #ident: 0,
+                    }
+                }
+                DefExpr::Unit => {
+                    self_args = quote! {
+                        #self_args
+                        #ident: (),
                     }
                 }
             }

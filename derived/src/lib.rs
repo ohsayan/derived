@@ -204,9 +204,13 @@ pub fn derive_stor(input: TokenStream) -> TokenStream {
 #[proc_macro_derive(Constdef)]
 /// # `Constdef`: Constant, compile-time default implementations
 ///
+/// Overcome the limits of the default trait to get constant, compile-time default implementations.
+///
+/// ## Why, and how?
 /// Implementations of the [`Default`](core::default::Default) trait cannot unfortunately be called
 /// in `const` contexts due to the [current limitations with traits per RFC 911](https://rust-lang.github.io/rfcs/0911-const-fn.html#detailed-design).
-/// To overcome this limitation, this crate _hacks around_ the problem by evaluating types at compile time and substituting requisite values.
+/// To overcome this limitation, this crate _hacks around_ the problem by evaluating types at
+/// compile time and substituting requisite values.
 ///
 /// ## Example
 ///
