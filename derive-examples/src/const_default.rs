@@ -13,6 +13,8 @@ pub struct Constable {
     num_array: [u8; 10],
     bool_array: [bool; 20],
     float_array: [f32; 30],
+    tuple: (u8, u16),
+    nested_tuple: ((u8, u8), u16),
 }
 
 const CONSTABLE: Constable = Constable::default();
@@ -27,4 +29,6 @@ fn test_const_default() {
     assert_eq!(CONSTABLE.float_array, [0.0; 30]);
     assert_eq!(CONSTABLE.small_float, 0.0);
     assert_eq!(CONSTABLE.big_float, 0.0);
+    assert_eq!(CONSTABLE.tuple, (0, 0));
+    assert_eq!(CONSTABLE.nested_tuple, ((0, 0), 0));
 }

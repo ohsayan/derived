@@ -229,6 +229,9 @@ pub fn derive_stor(input: TokenStream) -> TokenStream {
 ///     f: u128,
 ///     array: [f32; 16], // arrays too!
 ///     char_array: [char; 48],
+///     // even tuples!
+///     tuple: (u8, u16),
+///     nested_tuple: ((u8, u8), u16),
 /// }
 ///
 /// const DEF: MyDefault = MyDefault::default();
@@ -240,6 +243,8 @@ pub fn derive_stor(input: TokenStream) -> TokenStream {
 /// assert_eq!(DEF.f, 0);
 /// assert_eq!(DEF.array, [0.0; 16]);
 /// assert_eq!(DEF.char_array, ['\0'; 48]);
+/// assert_eq!(DEF.tuple, (0, 0));
+/// assert_eq!(DEF.nested_tuple, ((0, 0), 0));
 ///
 /// // you can also use it with methods that use `Default` because the trait
 /// // is implemented too
@@ -255,6 +260,7 @@ pub fn derive_stor(input: TokenStream) -> TokenStream {
 ///     u8, i8, u16, i16, u32, i32, u64, i64, u128, i128, str, bool, usize, isize, char, f32, f64, ()
 ///     ```
 /// - All arrays of the above types are supported
+/// - All tuples and nested tuples of the above types are supported
 /// - Nested arrays are not yet supported, but is being worked on
 pub fn derive_constdef(input: TokenStream) -> TokenStream {
     constdef::derive(input)

@@ -13,6 +13,7 @@ pub enum DefExpr {
     FloatingArray(String),
     CharArray(String),
     UnitArray(String),
+    CustomTuple(String),
 }
 
 impl DefExpr {
@@ -27,63 +28,77 @@ impl DefExpr {
         };
         Some(r)
     }
-    pub(super) fn into_tokens(self, ident: &Ident) -> quote::__private::TokenStream {
+    /// Returns the base token's default value
+    pub(super) fn into_base_token(self) -> quote::__private::TokenStream {
         match self {
             DefExpr::Boolean => {
                 quote! {
-                    #ident: false,
+                    false
                 }
             }
             DefExpr::Char => {
                 quote! {
-                    #ident: '\0',
+                    '\0'
                 }
             }
             DefExpr::Float => {
                 quote! {
-                    #ident: 0.0,
+                    0.0
                 }
             }
             DefExpr::Numeric => {
                 quote! {
-                    #ident: 0,
+                    0
                 }
             }
             DefExpr::Unit => {
                 quote! {
-                    #ident: (),
+                    ()
                 }
             }
             DefExpr::NumericArray(len) => {
                 let len: quote::__private::TokenStream = len.parse().unwrap();
                 quote! {
-                    #ident: [0; #len],
+                    [0; #len]
                 }
             }
             DefExpr::BooleanArray(len) => {
                 let len: quote::__private::TokenStream = len.parse().unwrap();
                 quote! {
-                    #ident: [false; #len],
+                    [false; #len]
                 }
             }
             DefExpr::CharArray(len) => {
                 let len: quote::__private::TokenStream = len.parse().unwrap();
                 quote! {
-                    #ident: ['\0'; #len],
+                    ['\0'; #len]
                 }
             }
             DefExpr::FloatingArray(len) => {
                 let len: quote::__private::TokenStream = len.parse().unwrap();
                 quote! {
-                    #ident: [0.0; #len],
+                    [0.0; #len]
                 }
             }
             DefExpr::UnitArray(len) => {
                 let len: quote::__private::TokenStream = len.parse().unwrap();
                 quote! {
-                    #ident: [(); #len],
+                    [(); #len]
                 }
             }
+            DefExpr::CustomTuple(custom) => {
+                let custom: quote::__private::TokenStream = custom.parse().unwrap();
+                quote! {
+                    (#custom)
+                }
+            }
+        }
+    }
+    /// Returns tokens that finally resolves to `field: expr,`
+    pub(super) fn into_tokens(self, ident: &Ident) -> quote::__private::TokenStream {
+        let ret = self.into_base_token();
+        quote! {
+            #ident: #ret,
         }
     }
 }

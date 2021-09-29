@@ -1,6 +1,6 @@
 use super::types::{DefExpr, CONSTDEF};
-use ::quote::ToTokens;
-use ::syn::TypePath;
+use ::quote::{quote, ToTokens};
+use ::syn::{Type, TypePath, TypeTuple};
 
 pub(crate) fn analyze_type_path(t: &TypePath) -> Option<DefExpr> {
     if t.path.segments.len() == 1 {
@@ -45,4 +45,28 @@ fn try_minimize_typepath(tpath: Vec<String>) -> Result<String, Vec<String>> {
         None => {}
     }
     ret.ok_or(tpath)
+}
+
+pub fn recursive_process_tuple(tuple: &TypeTuple) -> Option<DefExpr> {
+    let mut inner_decl = quote! {};
+    for elem in tuple.elems.iter() {
+        match elem {
+            Type::Path(ref tpath) => {
+                let ret = self::analyze_type_path(tpath)?.into_base_token();
+                inner_decl = quote! {
+                    #inner_decl
+                    #ret,
+                };
+            }
+            Type::Tuple(ref tuple) => {
+                let ret = self::recursive_process_tuple(tuple)?.into_base_token();
+                inner_decl = quote! {
+                    #inner_decl
+                    #ret,
+                };
+            }
+            _ => return None,
+        }
+    }
+    Some(DefExpr::CustomTuple(inner_decl.to_string()))
 }

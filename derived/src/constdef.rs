@@ -44,6 +44,7 @@ pub fn derive(input: TokenStream) -> TokenStream {
                     elem.and_then(|e| DefExpr::get_simple_array(e, array_len))
                 }
                 Type::Tuple(tp) if tp.elems.is_empty() => CONSTDEF.get("()").cloned(),
+                Type::Tuple(tpl) => self::type_analysis::recursive_process_tuple(tpl),
                 _ => None,
             };
             let ret = match is_const_able {
