@@ -17,7 +17,7 @@
 //! - Skip ctors, gtors and stors for `PhantomData` fields with the `#[phantom]` attribute
 //!
 
-use proc_macro::TokenStream;
+use ::proc_macro::TokenStream;
 #[macro_use]
 mod macros;
 mod constdef;

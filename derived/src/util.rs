@@ -1,8 +1,6 @@
-use proc_macro::TokenStream;
-use quote::quote;
-use syn::spanned::Spanned;
-use syn::Attribute;
-use syn::{Data, DataStruct, DeriveInput, Fields, Ident, Type};
+use ::proc_macro::TokenStream;
+use ::quote::quote;
+use ::syn::{spanned::Spanned, Attribute, Data, DataStruct, DeriveInput, Fields, Ident, Type};
 
 pub(crate) const ATTR_PHANTOM: &str = "phantom";
 

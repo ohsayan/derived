@@ -3,9 +3,9 @@
 
 use crate::util;
 use crate::util::ATTR_PHANTOM;
-use proc_macro::TokenStream;
-use quote::quote;
-use syn::{parse_macro_input, DeriveInput, Ident};
+use ::proc_macro::TokenStream;
+use ::quote::quote;
+use ::syn::{parse_macro_input, DeriveInput, Ident};
 
 const ATTR_STOR_SKIP: &str = "stor_skip";
 

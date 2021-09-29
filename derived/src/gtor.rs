@@ -3,9 +3,9 @@
 
 use crate::util;
 use crate::util::ATTR_PHANTOM;
-use proc_macro::TokenStream;
-use quote::{quote, ToTokens};
-use syn::{parse_macro_input, punctuated::Punctuated, DeriveInput, Ident, Meta, Token, Type};
+use ::proc_macro::TokenStream;
+use ::quote::{quote, ToTokens};
+use ::syn::{parse_macro_input, punctuated::Punctuated, DeriveInput, Ident, Meta, Token, Type};
 use util::TYCOPY;
 
 /// The attribute for constant (compile-time) getters

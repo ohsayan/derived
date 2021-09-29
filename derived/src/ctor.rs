@@ -3,9 +3,9 @@
 
 use crate::util;
 use crate::util::ATTR_PHANTOM;
-use proc_macro::TokenStream;
-use quote::quote;
-use syn::{parse_macro_input, DeriveInput};
+use ::proc_macro::TokenStream;
+use ::quote::quote;
+use ::syn::{parse_macro_input, DeriveInput};
 
 const ATTR_CONST_CTOR: &str = "ctor_const";
 
