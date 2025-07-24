@@ -1,6 +1,6 @@
 # `derived`: Macros for automating the boring stuff
 
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/ohsayan/derived/Test?style=flat-square) [![Crates.io](https://img.shields.io/crates/v/derived?style=flat-square)](https://crates.io/crates/derived) [![docs.rs](https://img.shields.io/docsrs/derived?style=flat-square)](https://docs.rs/derived) [![GitHub](https://img.shields.io/github/license/ohsayan/derived?style=flat-square)](./LICENSE)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ohsayan/derived/test.yml?style=flat-square) [![Crates.io](https://img.shields.io/crates/v/derived?style=flat-square)](https://crates.io/crates/derived) [![docs.rs](https://img.shields.io/docsrs/derived?style=flat-square)](https://docs.rs/derived) [![GitHub](https://img.shields.io/github/license/ohsayan/derived?style=flat-square)](./LICENSE)
 
 The `derived` crate provides macros that can simplify all the boring stuff, like writing constructors for example. With this crate, you can create **compile-time, constant default implementations**, **constructors**, **getters** and
 **setters** with full generics and lifetime support.
@@ -11,9 +11,9 @@ The `derived` crate provides macros that can simplify all the boring stuff, like
 - **`Gtor`**: To generate **getters**
 - **`Stor`**: To generate **setters**
 - **`Constdef`**: To generate **constant, compile-time default implementations**.
-  > 🎉 **Arrays**, **tuples**, **nested tuples in arrays** and **nested arrays in tuples** included!
-- 💯 **Full lifetimes, generics** and **`where` clause support**
-- 🤓 **Advanced features**:
+  > **Arrays**, **tuples**, **nested tuples in arrays** and **nested arrays in tuples** included!
+- **Full lifetimes, generics** and **`where` clause support**
+- **Advanced features**:
   - Use the `gtor` attribute to get either immutable or mutable or both references (see example below)
   - Skip generation of setters or getters with the `#[stor_skip]` or `#[gtor_skip]` attributes for
     specific fields
