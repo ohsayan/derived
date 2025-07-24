@@ -14,6 +14,9 @@ pub struct User {
     followers: u64,
 }
 
+#[derive(Ctor, Gtor, Stor)]
+pub struct EmptyStruct {}
+
 // use the constant ctor
 const _USER: User = User::new("sayan", "ohsayan@outlook.com", true, 1, u64::MAX);
 const _UNAME: &'static str = _USER.get_name();
@@ -37,4 +40,9 @@ fn test_basic() {
     let ty = MyType::new(&125u8, 0);
     assert_eq!(ty.str_value.to_string(), "125");
     assert_eq!(ty.tag, 0);
+}
+
+#[test]
+fn test_empty() {
+    let _ = EmptyStruct::new();
 }
