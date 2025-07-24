@@ -79,7 +79,8 @@ pub fn derive_ctor(input: TokenStream) -> TokenStream {
         FieldListAny::Unnamed(types) => {
             let mock_ids: Vec<Ident> = types
                 .iter()
-                .map(|ty| format_ident!("__{}", ty.to_token_stream().to_string()))
+                .enumerate()
+                .map(|(i, ty)| format_ident!("__{i}_{}", ty.to_token_stream().to_string()))
                 .collect();
             quote! {
                 impl #impl_gen #struct_name #ty_gen #where_clause {
