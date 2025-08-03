@@ -8,6 +8,40 @@ gen_typeset! {
     u8, i8, u16, i16, u32, i32, u64, i64, u128, i128, str, bool, usize, isize, char, f32, f64
 }
 
+pub enum FieldListAny<'a> {
+    Named(Vec<(&'a Ident, &'a Type, &'a Vec<Attribute>)>),
+    Unnamed(Vec<&'a Type>),
+}
+
+pub fn get_struct_field_list_any(ast: &DeriveInput) -> Result<FieldListAny, TokenStream> {
+    let fields_ = match &ast.data {
+        Data::Struct(DataStruct { fields, .. }) => match fields {
+            Fields::Named(fields) => FieldListAny::Named(
+                fields
+                    .named
+                    .iter()
+                    .map(|field| {
+                        let fname = field.ident.as_ref().unwrap();
+                        (fname, &field.ty, &field.attrs)
+                    })
+                    .collect(),
+            ),
+            Fields::Unnamed(fields) => {
+                FieldListAny::Unnamed(fields.unnamed.iter().map(|f| &f.ty).collect())
+            }
+            Fields::Unit => FieldListAny::Unnamed(vec![]),
+        },
+        _ => {
+            return Err(
+                syn::Error::new_spanned(ast, "this macro can only be used on structs")
+                    .into_compile_error()
+                    .into(),
+            );
+        }
+    };
+    Ok(fields_)
+}
+
 /// Returns the field names and their corresponding type from the AST (returning an error
 /// if it isn't a struct)
 pub fn get_struct_field_names(

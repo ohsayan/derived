@@ -12,5 +12,7 @@ mod gtor_skip;
 mod phantom;
 #[cfg(test)]
 mod stor_skip;
+#[cfg(test)]
+mod tuple_struct;
 
 fn main() {}

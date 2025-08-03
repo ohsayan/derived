@@ -15,8 +15,21 @@ fn test_basic() {
 #[test]
 fn test_empty_struct() {
     #[derive(Ctor)]
-    struct Empty {}
-    let _ = Empty::new();
+    struct Empty1 {}
+    #[derive(Ctor)]
+    struct Empty2();
+    let _ = Empty1::new();
+    let _ = Empty2::new();
+}
+
+#[test]
+fn test_tuple_ctor_fancy_types() {
+    #[derive(Ctor)]
+    struct Fancy<T, U: AsRef<str>>(Option<T>, u64, U);
+    let fancy = Fancy::new(Some("hello".to_owned()), 0, "world");
+    assert_eq!(fancy.0.as_deref(), Some("hello"));
+    assert_eq!(fancy.1, 0);
+    assert_eq!(fancy.2, "world");
 }
 
 #[test]
